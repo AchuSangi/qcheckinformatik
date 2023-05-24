@@ -140,7 +140,7 @@ def welcome():
                 st.write("The calculated coefficient of variation is:", format(coefficient_of_variation,".2f") ,"%")
                
             #Bild1 hinzugefügt mit Spruch
-            imageDrops = Image.open('bilder/Drops.jpg')
+            imageDrops = Image.open('bilder/drops.jpg')
             st.image(imageDrops, caption='"Good quality is not what we put into it. It is what the client or customer gets out of it." - Peter Drucker', use_column_width=True)
 
 
@@ -183,7 +183,7 @@ def welcome():
                 st.write("The calculated coefficient of variation is:", format(coefficient_of_variation,".2f") ,"%")
                 
             #Bild 2 hinzugefügt
-            imageRed = Image.open('bilder/red.png')
+            imageRed = Image.open('bilder/red.jpg')
             st.image(imageRed, caption='"Quality control is not a department, it is everyones job." - W. Edwards Deming', use_column_width=True)
                
         
