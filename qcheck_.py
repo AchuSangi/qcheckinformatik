@@ -6,7 +6,9 @@ from PIL import Image
 import numpy as np
 import os
 import shutil
-
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 
@@ -228,9 +230,13 @@ def welcome():
             selected_chart = st.selectbox("Select Chart Type", chart_options)
 
         if selected_chart == "Bar Chart":
-            st.header('Bar Chart Example')
             x = ['A', 'B', 'C', 'D', 'E']
             y = [10, 7, 5, 3, 1]
+
+        elif selected_chart == "Bar Chart":
+            st.header('Bar Chart Example')
+            x = np.linspace(0, 10, 100)
+            y = np.sin(x)
 
         elif selected_chart == "Line Chart":
             st.header('Line Chart Example')
@@ -265,63 +271,77 @@ def welcome():
         #Bild3 hinzugefügt mit Spruch
         imageabout = Image.open('bilder/lab.jpg')
         st.image(imageabout, caption='"Learning never exhausts the mind." - Leonardo da Vinci', use_column_width=True)
-    
-    
-    
-        # Pfad zum Speicherort der Videos
-        video_save_path = "videos"  # Hier kannst du den Speicherort anpassen
+       
 
-        st.header("Video Upload")
-        uploaded_video = st.file_uploader("Upload a video", type=["mp4"])
+        # Read more Button erstellt
+        read_more = st.button('VIDEOS')
 
-        if uploaded_video is not None:
-    # Button zum Speichern des Videos
-            if st.button("Save Video"):
-        # Speicherpfad für das Video
-                save_path = os.path.join(video_save_path, uploaded_video.name)
+        if read_more:
+            # ganzer Text wird angezeigt, wenn man es klickt
+            st.write()
             
-        # Video speichern
-                with open(save_path, "wb") as f:
-                    f.write(uploaded_video.getbuffer())
+            # Pfad zum vorhandenen Video
+            video_path = "videos/CRP.mp4"
+            video_file = open(video_path, "rb")
+            save_bytes = video_file.read()
+            with open(video_path, "rb") as video_file:
+                video_bytes = video_file.read()
+            st.video(video_bytes)
+        
 
-            st.success("Video successfully saved.")
-
-    #About us tab, Schriftart und Grösse definiert
+#Feedback tab, Schriftart und Grösse definiert
     if choice == "Feedback":
-    
+
         st.write('<style>h1{font-size: 36px; font-weight: bold;}</style>', unsafe_allow_html=True)
         st.title('Feedback')
-        st.write("<p style='font-size: 30px; color: grey; text-decoration: none;'>Discovering solutions, delivering results</p>", unsafe_allow_html=True)
-
-        st.markdown(
-         """
-         <p style='font-size: 20px;'>
-Welcome to our feedback page!
-
-We are delighted to have you here and appreciate your valuable feedback. Your opinion is of great importance to us as it helps us continuously improve our services to meet your expectations.
-This feedback page provides you with an opportunity to share your thoughts, suggestions, and comments with us. Whether you have praise, constructive criticism, improvement ideas, or questions, we are eager to hear your feedback.
-We firmly believe that feedback is a crucial component of our growth. It enables us to address the needs and desires of our customers and enhance your experiences with our services.
-Your feedback is not only welcome but also taken seriously. We will carefully review each response and utilize them to implement positive changes and enhance our performance.
-We would like to express our sincere gratitude for taking the time to share your feedback with us. Together, we can contribute to making your experiences with our company even better.
-We look forward to receiving your feedback and are excited to hear your impressions!
-Yours sincerely, Q-Check Team </p>
-         <p style='font-size: 20px;'>Visit our website to learn more about our services, and let us help you optimize your hematology laboratory's performance. Our team is here to support you with any additional information or help you require.</p>
-         """, unsafe_allow_html=True)
-        #Bild3 hinzugefügt mit Spruch
-        imageabout = Image.open('bilder/about.jpg')
-        st.image(imageabout, caption='"The science of today is the technology of tomorrow." - Edward Teller', use_column_width=True)
     
+        st.markdown(
+     """
+     <p style='font-size: 20px;'>
+     Welcome to our feedback page!
 
-        # Text Personas
-        long_text = """
-        The app was created for Nila Walker. Nila is a 32-year-old woman and works as a biomedical laboratory 
-        diagnostician at Roche. Nila has a lot of responsibilities in the company, so she doesn't have time to recalculate 
-        the range of norm values ​​for the controls with each new lot number. Due to the stress, it has also happened that she entered the range 
-        values ​​incorrectly. This was discovered when the controls were repeatedly out of the norm.
-        That's why we decided to make Nila's everyday work a little easier and design an app that 
-        calculates the standard values ​​​​for quality control.
-        """
-        
+    We are delighted to have you here and appreciate your valuable feedback. Your opinion is of great importance to us as it helps us continuously improve our services to meet your expectations.
+    This feedback page provides you with an opportunity to share your thoughts, suggestions, and comments with us. Whether you have praise, constructive criticism, improvement ideas, or questions, we are eager to hear your feedback.
+    We firmly believe that feedback is a crucial component of our growth. It enables us to address the needs and desires of our customers and enhance your experiences with our services.
+    Your feedback is not only welcome but also taken seriously. We will carefully review each response and utilize them to implement positive changes and enhance our performance.
+    We would like to express our sincere gratitude for taking the time to share your feedback with us. Together, we can contribute to making your experiences with our company even better.
+    We look forward to receiving your feedback and are excited to hear your impressions! 
+    Yours sincerely, Q-Check Team </p>
+     """, unsafe_allow_html=True)
+
+        #Bild3 hinzugefügt mit Spruch
+        imageabout = Image.open('bilder/feedback.jpg')
+        st.image(imageabout, caption='"Feedback is the breakfast of champions."', use_column_width=True)
+
+        email = st.text_input("Please enter your email address:")
+        feedback = st.text_area("Please enter your feedback:", "")
+
+        if st.button("Submit Feedback"):
+        # E-Mail-Einstellungen
+            smtp_server = 'smtp.example.com'
+            smtp_port = 587
+            sender_email = email
+            sender_password = 'your_password'
+            receiver_email = 'rukunakk@students.zhaw.ch'
+
+        # E-Mail-Nachricht erstellen
+            message = MIMEMultipart()
+            message['From'] = sender_email
+            message['To'] = receiver_email
+            message['Subject'] = 'Feedback received'
+        message.attach(MIMEText(feedback, 'plain'))
+
+        try:
+            # Verbindung zum SMTP-Server herstellen und E-Mail senden
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.sendmail(sender_email, receiver_email, message.as_string())
+
+            st.write("Thank you for your feedback! Your feedback has been successfully submitted.")
+        except Exception as e:
+            st.write("An error occurred while sending the feedback:", str(e))
+
     #About us tab, Schriftart und Grösse definiert
     if choice == "About Us":
     
